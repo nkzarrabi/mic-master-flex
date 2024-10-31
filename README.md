@@ -20,7 +20,8 @@
 6. [Building the project locally](#building-the-project-locally)
 7. [Project structure](#project-structure)
 8. [Bore-Sight Feature](#bore-sight-feature)
-9. [Citation](#citation)
+9. [Lighthouse Audit](#lighthouse-audit)
+10. [Citation](#citation)
 
 ## 📸 Demo
 https://github.com/user-attachments/assets/419bda8b-d6a5-4f54-87b8-acef9d752226
@@ -85,6 +86,7 @@ There's nothing special about `src/components/`, but that's where we like to put
 
 Any static assets, like images, can be placed in the `public/` directory.
 
+
 ## 📝 Bore-Sight Feature
 
 The bore-sight feature in MicMasterFlex allows users to visualize the front direction of the robot. This is particularly useful for applications where the orientation of the robot is crucial. The bore-sight is represented by an arrow on the grid, indicating the direction the robot is facing.
@@ -94,6 +96,20 @@ The bore-sight feature in MicMasterFlex allows users to visualize the front dire
 1. **Adjust Bore-Sight Mode**: Select the "Adjust Bore-Sight" mode from the toolbar.
 2. **Drag to Adjust**: Click and drag on the grid to adjust the orientation of the bore-sight arrow.
 3. **Visual Feedback**: The arrow will update in real-time to show the new orientation.
+
+## 🌟 Lighthouse Audit
+
+We have integrated Lighthouse CI into our continuous integration process to ensure the highest quality of our web application. Lighthouse CI runs audits for performance, accessibility, best practices, SEO, and more.
+
+### Running Lighthouse CI Locally
+
+To run Lighthouse CI locally, use the following command:
+
+```sh
+npm run lighthouse
+```
+
+This will execute the Lighthouse CI audit and provide a detailed report of the results.
 
 ## 📝 Citation
 
