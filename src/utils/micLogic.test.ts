@@ -1,4 +1,5 @@
-import { gridToScreen, screenToGrid, handleMouseDown, handleMouseMove, handleMouseUp, handleCoordinateUpdate, generateGridLines, getNumpyArrayString, copyToClipboard, getCursor, Microphone, Point, Mode } from './micLogic';
+import { gridToScreen, screenToGrid, handleMouseDown, handleMouseMove, handleMouseUp, handleCoordinateUpdate, generateGridLines, getNumpyArrayString, copyToClipboard, getCursor, type Microphone, type Point, type Mode } from './micLogic';
+import { describe, test, expect } from '@jest/globals';
 
 describe('micLogic utility functions', () => {
     test('gridToScreen converts grid coordinates to screen coordinates correctly', () => {

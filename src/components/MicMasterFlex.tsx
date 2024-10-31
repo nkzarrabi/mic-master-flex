@@ -1,4 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
+
+type Microphone = {
+    id: string;
+    x: number;
+    y: number;
+};
 import { Copy, ZoomIn, ZoomOut, PlusCircle, Trash2, Hand, Edit2 } from 'lucide-react';
 import {
     gridToScreen,
@@ -7,11 +13,13 @@ import {
     handleMouseMove,
     handleMouseUp,
     handleCoordinateUpdate,
-    generateGridLines,
     getNumpyArrayString,
     copyToClipboard,
-    getCursor
-} from '../utils/micLogic';
+    getCursor,
+    generateGridLines,
+    type Point,
+    type Mode
+} from '../utils/micLogic.tsx';
 
 const MicMasterFlex = () => {
     const [microphones, setMicrophones] = useState<Microphone[]>([]);
@@ -21,6 +29,8 @@ const MicMasterFlex = () => {
     const [pan, setPan] = useState<Point>({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState<Point | null>(null);
+
+
     const [mode, setMode] = useState<Mode>('add');
     const [showEditDialog, setShowEditDialog] = useState(false);
     const [editX, setEditX] = useState('');
@@ -111,7 +121,28 @@ const MicMasterFlex = () => {
                     style={{ cursor: getCursor(mode) }}
                     onMouseDown={(e) => handleMouseDown(e, svgRef, setDragStart, setIsDragging)}
                     onMouseMove={(e) => handleMouseMove(e, svgRef, isDragging, mode, dragStart, setPan, setDragStart)}
-                    onMouseUp={(e) => handleMouseUp(e, svgRef, isDragging, dragStart, mode, hoveredMic, setMicrophones, setHoveredMic, setSelectedMic, setEditX, setEditY, setShowEditDialog, zoom, pan, microphones)}
+                    onMouseUp={(e) =>
+                        handleMouseUp(
+                            e,
+                            svgRef,
+                            isDragging,
+                            dragStart,
+                            mode,
+                            hoveredMic,
+                            setMicrophones,
+                            setHoveredMic,
+                            setSelectedMic,
+                            setEditX,
+                            setEditY,
+                            setShowEditDialog,
+                            setIsDragging,
+                            setDragStart,
+                            zoom,
+                            pan,
+                            microphones
+                        )
+                    }
+
                     onMouseLeave={() => setIsDragging(false)}
                 >
                     <g>
@@ -152,7 +183,7 @@ const MicMasterFlex = () => {
                 {showEditDialog && (
                     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4 rounded-lg shadow-lg z-20">
                         <h3 className="text-lg font-semibold mb-4">Edit Microphone Position</h3>
-                        <form onSubmit={(e) => handleCoordinateUpdate(e, selectedMic, editX, editY, setMicrophones, setShowEditDialog, setSelectedMic)} className="space-y-4">
+                        <form onSubmit={(e) => { e.preventDefault(); if (selectedMic !== null) { handleCoordinateUpdate(selectedMic.id, parseFloat(editX), parseFloat(editY), setMicrophones); } }} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">X Coordinate (m)</label>
                                 <input

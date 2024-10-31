@@ -8,7 +8,19 @@ export type Point = {
     x: number;
     y: number;
 }
-
+// micLogic.tsx
+export const handleCoordinateUpdate = (
+    micId: string,
+    newX: number,
+    newY: number,
+    setMicrophones: React.Dispatch<React.SetStateAction<Microphone[]>>
+) => {
+    setMicrophones(prevMics =>
+        prevMics.map(mic =>
+            mic.id === micId ? { ...mic, x: newX, y: newY } : mic
+        )
+    );
+};
 export type Mode = 'pan' | 'add' | 'delete' | 'edit';
 
 export const gridToScreen = (point: Point, zoom: number, pan: Point): Point => ({
@@ -64,6 +76,7 @@ export const handleMouseMove = (
     }
 };
 
+
 export const handleMouseUp = (
     e: React.MouseEvent,
     svgRef: React.RefObject<SVGSVGElement>,
@@ -77,9 +90,11 @@ export const handleMouseUp = (
     setEditX: React.Dispatch<React.SetStateAction<string>>,
     setEditY: React.Dispatch<React.SetStateAction<string>>,
     setShowEditDialog: React.Dispatch<React.SetStateAction<boolean>>,
+    setIsDragging: React.Dispatch<React.SetStateAction<boolean>>,
+    setDragStart: React.Dispatch<React.SetStateAction<Point | null>>, // No default function here
     zoom: number,
     pan: Point,
-    microphones: Microphone[]
+    microphones: Microphone[] = []
 ) => {
     if (!isDragging || !svgRef.current) return;
 
@@ -100,7 +115,7 @@ export const handleMouseUp = (
             };
             setMicrophones([...microphones, newMic]);
         } else if (mode === 'delete' && hoveredMic) {
-            setMicrophones(mics => mics.filter(m => m.id !== hoveredMic.id));
+            setMicrophones(mics => mics ? mics.filter(m => m.id !== hoveredMic.id) : []);
             setHoveredMic(null);
         } else if (mode === 'edit' && hoveredMic) {
             setSelectedMic(hoveredMic);
@@ -114,38 +129,16 @@ export const handleMouseUp = (
     setDragStart(null);
 };
 
-export const handleCoordinateUpdate = (
-    e: React.FormEvent,
-    selectedMic: Microphone | null,
-    editX: string,
-    editY: string,
-    setMicrophones: React.Dispatch<React.SetStateAction<Microphone[]>>,
-    setShowEditDialog: React.Dispatch<React.SetStateAction<boolean>>,
-    setSelectedMic: React.Dispatch<React.SetStateAction<Microphone | null>>
-) => {
-    e.preventDefault();
-    if (!selectedMic) return;
 
-    const x = parseFloat(editX);
-    const y = parseFloat(editY);
-
-    if (isNaN(x) || isNaN(y)) return;
-
-    setMicrophones(mics =>
-        mics.map(mic =>
-            mic.id === selectedMic.id ? { ...mic, x, y } : mic
-        )
-    );
-    setShowEditDialog(false);
-    setSelectedMic(null);
-};
+import React from 'react';
+import { gridToScreen as importedGridToScreen, type Point as ImportedPoint } from './micLogic'; // Adjust the path as necessary
 
 export const generateGridLines = (
     gridSize: number,
     gridDivisions: number,
     zoom: number,
     pan: Point
-) => {
+): React.ReactNode => {
     const lines = [];
     const step = gridSize / gridDivisions;
 
@@ -181,7 +174,7 @@ export const generateGridLines = (
         );
     }
 
-    return lines;
+    return <>{lines}</>;
 };
 
 export const getNumpyArrayString = (microphones: Microphone[]) => {
