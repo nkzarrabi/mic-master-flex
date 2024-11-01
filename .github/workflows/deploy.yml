@@ -14,25 +14,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout your repository using git
         uses: actions/checkout@v4
 
-      - name: Install Bun
-        uses: oven-sh/setup-bun@v1
-
-      - name: Install dependencies with Bun
-        run: bun install
-
-      - name: Build the site with Bun
-        run: bun run build  # Produces the `dist` folder
-
-      - name: List build output
-        run: ls -R dist  # Verify if `dist` was created
-
-      - name: Upload build output for GitHub Pages
-        uses: actions/upload-pages-artifact@v1
+      - name: Install, build, and upload your site
+        uses: withastro/action@v3
         with:
-          path: dist  # Path to your generated site files
+          path: .  # Set the path to the root of your Astro project
+          node-version: 20  # Specify Node.js version if needed
+          package-manager: bun # Set package manager to Bun if your project uses it
+
+      # Upload artifact for Lighthouse CI compatibility
+      - name: Upload build output for Lighthouse
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist-folder  # Artifact name for Lighthouse CI
+          path: dist/**  # Ensure all files in dist are included
 
   lighthouse:
     needs: build
@@ -41,10 +38,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download build output artifact
+      # Download artifact for Lighthouse CI analysis
+      - name: Download build output artifact for Lighthouse
         uses: actions/download-artifact@v3
         with:
-          name: github-pages
+          name: dist-folder
           path: dist  # Download into the 'dist' directory
 
       - name: List files in current directory
@@ -53,17 +51,8 @@ jobs:
       - name: List files in dist directory
         run: ls -la dist
 
-      - name: Show lighthouserc.json
-        run: cat lighthouserc.json || echo "lighthouserc.json not found"
-
-      - name: Install Bun
-        uses: oven-sh/setup-bun@v1
-
       - name: Install Lighthouse CI globally
-        run: bun install -g @lhci/cli@0.14.x
-
-      - name: Run Lighthouse CI
-        run: lhci autorun --collect.staticDistDir=dist --assert.assertions.errors-in-console=warn
+        run: npx lhci autorun --collect.staticDistDir=dist --assert.assertions.errors-in-console=warn
 
   deploy:
     needs: [build, lighthouse]
