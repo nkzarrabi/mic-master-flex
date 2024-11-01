@@ -18,12 +18,12 @@ jobs:
         uses: actions/checkout@v4
       - name: Install Bun
         uses: oven-sh/setup-bun@v1
-      - name: Install dependencies and build the site
-        run: |
-          bun install
-          bun build  # Creates the `dist` folder
+      - name: Install dependencies with Bun
+        run: bun install
+      - name: Build the Astro site
+        run: npx astro build  # Runs the build, creating the `dist` folder
       - name: List build output
-        run: ls -R dist  # Check if /dist was created
+        run: ls -R dist  # Verify if `dist` was created
 
   lighthouse:
     needs: build
