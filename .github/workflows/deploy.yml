@@ -24,6 +24,11 @@ jobs:
         run: bun run build  # Produces the `dist` folder
       - name: List build output
         run: ls -R dist  # Verify if `dist` was created
+      - name: Upload build output as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist-folder
+          path: dist
 
   lighthouse:
     needs: build
@@ -31,6 +36,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Download build output artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: dist-folder
+          path: .
       - name: Install Bun
         uses: oven-sh/setup-bun@v1
       - name: Install Lighthouse CI globally
