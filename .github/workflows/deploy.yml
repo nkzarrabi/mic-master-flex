@@ -20,8 +20,8 @@ jobs:
         uses: oven-sh/setup-bun@v1
       - name: Install dependencies with Bun
         run: bun install
-      - name: Build the Astro site
-        run: npx astro build  # Runs the build, creating the `dist` folder
+      - name: Build the site with Bun
+        run: bun run build  # Produces the `dist` folder
       - name: List build output
         run: ls -R dist  # Verify if `dist` was created
 
