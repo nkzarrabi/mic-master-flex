@@ -32,8 +32,8 @@ jobs:
       - name: Upload build output as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: dist-folder
-          path: dist/**  # Include all files in dist
+          name: github-pages  # Artifact name expected by deploy-pages
+          path: dist  # Upload entire dist directory
 
   lighthouse:
     needs: build
@@ -45,7 +45,7 @@ jobs:
       - name: Download build output artifact
         uses: actions/download-artifact@v3
         with:
-          name: dist-folder
+          name: github-pages
           path: dist  # Download into the 'dist' directory
 
       - name: List files in current directory
@@ -64,14 +64,17 @@ jobs:
         run: bun install -g @lhci/cli@0.14.x
 
       - name: Run Lighthouse CI
-        run: lhci autorun --collect.staticDistDir=dist --assert.assertions.errors-in-console=warn # Remove './' for consistency
+        run: lhci autorun --collect.staticDistDir=dist --assert.assertions.errors-in-console=warn
 
   deploy:
     needs: [build, lighthouse]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
