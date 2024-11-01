@@ -29,11 +29,10 @@ jobs:
       - name: List build output
         run: ls -R dist  # Verify if `dist` was created
 
-      - name: Upload build output as artifact
-        uses: actions/upload-artifact@v3
+      - name: Upload build output for GitHub Pages
+        uses: actions/upload-pages-artifact@v1
         with:
-          name: github-pages  # Artifact name expected by deploy-pages
-          path: dist  # Upload entire dist directory
+          path: dist  # Path to your generated site files
 
   lighthouse:
     needs: build
