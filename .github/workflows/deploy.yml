@@ -46,9 +46,7 @@ jobs:
       - name: Install Lighthouse CI globally
         run: bun install -g @lhci/cli@0.14.x
       - name: Run Lighthouse CI
-        run: lhci autorun
-        env:
-          LHCI_BUILD_CONTEXT__STATIC_DIST_DIR: "./dist"
+        run: lhci autorun --collect.staticDistDir=./dist
 
   deploy:
     needs: [build, lighthouse]
