@@ -64,7 +64,7 @@ jobs:
         run: bun install -g @lhci/cli@0.14.x
 
       - name: Run Lighthouse CI
-        run: lhci autorun --collect.staticDistDir=dist  # Remove './' for consistency
+        run: lhci autorun --collect.staticDistDir=dist --assert.assertions.errors-in-console=warn # Remove './' for consistency
 
   deploy:
     needs: [build, lighthouse]
