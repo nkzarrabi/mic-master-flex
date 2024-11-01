@@ -20,7 +20,7 @@ jobs:
         uses: withastro/action@v3
         with:
           node-version: 20  # Optional: specify Node.js version for consistency
-          package-manager: npm  # Adjust if using `pnpm`
+          package-manager: npm  # Adjust if using pnpm or another package manager
 
   lighthouse:
     needs: build
