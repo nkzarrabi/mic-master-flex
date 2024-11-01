@@ -16,19 +16,24 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Install Bun
         uses: oven-sh/setup-bun@v1
+
       - name: Install dependencies with Bun
         run: bun install
+
       - name: Build the site with Bun
         run: bun run build  # Produces the `dist` folder
+
       - name: List build output
         run: ls -R dist  # Verify if `dist` was created
+
       - name: Upload build output as artifact
         uses: actions/upload-artifact@v3
         with:
           name: dist-folder
-          path: dist
+          path: dist/**  # Include all files in dist
 
   lighthouse:
     needs: build
@@ -36,17 +41,30 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Download build output artifact
         uses: actions/download-artifact@v3
         with:
           name: dist-folder
-          path: .
+          path: dist  # Download into the 'dist' directory
+
+      - name: List files in current directory
+        run: ls -la
+
+      - name: List files in dist directory
+        run: ls -la dist
+
+      - name: Show lighthouserc.json
+        run: cat lighthouserc.json || echo "lighthouserc.json not found"
+
       - name: Install Bun
         uses: oven-sh/setup-bun@v1
+
       - name: Install Lighthouse CI globally
         run: bun install -g @lhci/cli@0.14.x
+
       - name: Run Lighthouse CI
-        run: lhci autorun --collect.staticDistDir=./dist
+        run: lhci autorun --collect.staticDistDir=dist  # Remove './' for consistency
 
   deploy:
     needs: [build, lighthouse]
