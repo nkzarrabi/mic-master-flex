@@ -16,11 +16,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Install, build, and upload site
-        uses: withastro/action@v3
-        with:
-          node-version: 20  # Optional: specify Node.js version for consistency
-          package-manager: npm  # Adjust if using pnpm or another package manager
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v1
+      - name: Install dependencies and build the site
+        run: |
+          bun install
+          bun build  # Creates the `dist` folder
+      - name: List build output
+        run: ls -R dist  # Check if /dist was created
 
   lighthouse:
     needs: build
@@ -28,14 +31,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v1
       - name: Install Lighthouse CI globally
-        run: npm install -g @lhci/cli@0.14.x
+        run: bun install -g @lhci/cli@0.14.x
       - name: Run Lighthouse CI
         run: lhci autorun
+        env:
+          LHCI_BUILD_CONTEXT__STATIC_DIST_DIR: "./dist"
 
   deploy:
     needs: [build, lighthouse]
